@@ -45,7 +45,7 @@ This file is the entry point of an ASP.NET Core Minimal API application. It uses
    ```
    Starts the web server asynchronously and listens for incoming requests until shutdown is triggered (e.g., CTRL+C or SIGTERM).
 
-### Notes
+### Notesd
 
 - This is a minimal scaffold — no controllers, no endpoint logic yet. You'd add endpoints via `app.MapGet(...)`, `app.MapPost(...)`, etc.
 - For production, you'd typically add authentication, CORS, rate limiting, health checks, and structured logging on top of this foundation.
