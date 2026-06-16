@@ -49,3 +49,29 @@ This file is the entry point of an ASP.NET Core Minimal API application. It uses
 
 - This is a minimal scaffold — no controllers, no endpoint logic yet. You'd add endpoints via `app.MapGet(...)`, `app.MapPost(...)`, etc.
 - For production, you'd typically add authentication, CORS, rate limiting, health checks, and structured logging on top of this foundation.
+
+## StockController — Key Code Explained
+
+### `_context.Stocks.FirstOrDefault(x => x.Id == id)`
+
+```csharp
+var stockModel = _context.Stocks.FirstOrDefault(x => x.Id == id);
+```
+
+This line queries the database to find a single stock by its ID. Here's what each part does:
+
+- **`_context.Stocks`** — accesses the `Stocks` table in the database through Entity Framework's `DbSet<Stock>`.
+- **`.FirstOrDefault(...)`** — a LINQ method that returns the first element matching the condition, or `null` if no match is found.
+- **`x => x.Id == id`** — a lambda expression (filter condition) that checks if the stock's `Id` column equals the `id` parameter received from the route.
+
+**Behind the scenes**, Entity Framework translates this into a SQL query like:
+
+```sql
+SELECT TOP(1) * FROM Stocks WHERE Id = @id
+```
+
+**Why `FirstOrDefault` instead of `Find`?**
+- `Find(id)` looks up by primary key and checks the local cache first (faster if already tracked).
+- `FirstOrDefault` always queries the database and allows more complex filter conditions (e.g., filtering by multiple fields).
+
+Both return `null` if no record is found, which is why the next line checks `if (stockModel == null)` to return a 404.
