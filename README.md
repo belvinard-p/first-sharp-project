@@ -130,3 +130,60 @@ builder.Services.AddScoped<IStockRepository, StockRepository>();
 ```
 
 This tells the DI container: "When someone asks for `IStockRepository`, give them a `StockRepository` instance."
+
+## Circular Reference Error in JSON Serialization
+
+### The Problem
+
+When serializing entities with bidirectional navigation properties, the JSON serializer enters an infinite loop:
+
+```
+Stock → Comments → Comment.Stock → Stock.Comments → Comment.Stock → ...forever
+```
+
+This happens because:
+- `Stock` has `List<Comment> Comments`
+- `Comment` has `Stock Stock` (navigation back to parent)
+
+The serializer bounces back and forth until it hits the max depth of 32, then throws:
+
+```
+System.Text.Json.JsonException: A possible object cycle was detected.
+```
+
+### The Cause
+
+Returning **entity models** directly from the controller instead of **DTOs**:
+
+```csharp
+// ❌ BAD — returns entity with circular navigation
+var stocks = await _stockRepo.GetAllAsync();
+return Ok(stocks);
+
+// ✅ GOOD — returns DTO without circular reference
+var stocks = await _stockRepo.GetAllAsync();
+var stockDto = stocks.Select(s => s.ToStockDto());
+return Ok(stockDto);
+```
+
+### The Solution
+
+Use DTOs (Data Transfer Objects) that **don't include back-references**:
+
+- `Stock` entity → has `Comment.Stock` (circular) ❌
+- `StockDto` → has `List<CommentDto>` (no `Stock` property inside `CommentDto`) ✅
+
+This breaks the infinite loop because the serializer has no way to cycle back.
+
+### Tips to Avoid This
+
+1. **Never return entity models directly** — always map to DTOs before returning from a controller action.
+2. **Design DTOs without back-references** — if `StockDto` contains `List<CommentDto>`, then `CommentDto` should NOT contain a `StockDto`.
+3. **Global fallback** — if you ever need to return entities directly, add this in `Program.cs`:
+   ```csharp
+   builder.Services.AddControllers().AddJsonOptions(options =>
+   {
+       options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+   });
+   ```
+   This tells the serializer to output `null` instead of following a circular reference. But using DTOs is the better long-term practice.
