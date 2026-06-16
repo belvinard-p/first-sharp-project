@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "d:\\C-Sharp\\apiProject\\api\\api.csproj": {}
+    "D:\\C-Sharp\\apiProject\\api\\api.csproj": {}
   },
   "projects": {
-    "d:\\C-Sharp\\apiProject\\api\\api.csproj": {
+    "D:\\C-Sharp\\apiProject\\api\\api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\C-Sharp\\apiProject\\api\\api.csproj",
+        "projectUniqueName": "D:\\C-Sharp\\apiProject\\api\\api.csproj",
         "projectName": "api",
-        "projectPath": "d:\\C-Sharp\\apiProject\\api\\api.csproj",
+        "projectPath": "D:\\C-Sharp\\apiProject\\api\\api.csproj",
         "packagesPath": "C:\\Users\\belvinard\\.nuget\\packages\\",
-        "outputPath": "d:\\C-Sharp\\apiProject\\api\\obj\\",
+        "outputPath": "D:\\C-Sharp\\apiProject\\api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
